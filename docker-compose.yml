@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+
+  flight-db:
+    image: postgres:16-alpine
+    container_name: flight-db
+    restart: always
+    environment:
+      POSTGRES_DB: flightdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - flight_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  provider-a:
+    build:
+      context: ./provider-a
+    container_name: provider-a
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      flight-db:
+        condition: service_healthy
+
+  provider-b:
+    build:
+      context: ./provider-b
+    container_name: provider-b
+    restart: always
+    ports:
+      - "8082:8082"
+    depends_on:
+      flight-db:
+        condition: service_healthy
+
+  flight-consumer:
+    build:
+      context: ./consumer
+    container_name: flight-consumer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      provider-a:
+        condition: service_started
+      provider-b:
+        condition: service_started
+      flight-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://flight-db:5432/flightdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      PROVIDER_A_URL: http://provider-a:8081/ws/flights?wsdl
+      PROVIDER_B_URL: http://provider-b:8082/ws/flights?wsdl
+
+volumes:
+  flight_db_data:
