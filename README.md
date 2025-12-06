@@ -64,14 +64,15 @@ This project logs all incoming and outgoing requests using a PostgreSQL table ca
 ```sql
 CREATE TABLE request_response_log
 (
-    id             SERIAL PRIMARY KEY,
-    status         INTEGER,
-    method         VARCHAR(50),
-    uri            VARCHAR(50),
-    remote_address VARCHAR(50),
-    request        VARCHAR(500),
-    response       VARCHAR(500),
-    timestamp      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id SERIAL PRIMARY KEY,
+    service_name VARCHAR(50),
+    endpoint VARCHAR(200),
+    http_method VARCHAR(10),
+    request_payload TEXT,
+    response_payload TEXT,
+    status_code INTEGER,
+    error_message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
@@ -80,16 +81,17 @@ This table stores request and response details for monitoring and debugging purp
 
 📝 **Fields Explanation**
 
-| Column         | Type         | Description                      |
-| -------------- | ------------ | -------------------------------- |
-| id             | SERIAL       | Unique identifier for each log   |
-| status         | INTEGER      | HTTP status code of response     |
-| method         | VARCHAR(50)  | HTTP request method (GET/POST/…) |
-| uri            | VARCHAR(50)  | Request endpoint                 |
-| remote_address | VARCHAR(50)  | Client IP address                |
-| request        | VARCHAR(500) | Request payload                  |
-| response       | VARCHAR(500) | Response payload                 |
-| timestamp      | TIMESTAMP    | Time of the transaction          |
+| Column Name          | Data Type            |  Required | Description                                                         | Example                 |
+| -------------------- | -------------------- | :-------: | ------------------------------------------------------------------- | ----------------------- |
+| **id**               | SERIAL (Primary Key) |     ✔️    | Her bir log kaydı için benzersiz otomatik artan ID                  | `145`                   |
+| **service_name**     | VARCHAR(50)          |     ✔️    | Log kaydını oluşturan servis adı (REST API / ProviderA / ProviderB) | `ProviderA Integration` |
+| **endpoint**         | VARCHAR(200)         |     ✔️    | Çağrı yapılan endpoint URL veya API yolu                            | `/api/flights/search`   |
+| **http_method**      | VARCHAR(10)          |     ✔️    | Kullanılan protokol/HTTP metodu                                     | `POST`, `SOAP`, `GET`   |
+| **request_payload**  | TEXT                 |     ❌     | Gönderilen isteğin body veya SOAP payload içeriği                   | JSON veya XML           |
+| **response_payload** | TEXT                 |     ❌     | Dönen yanıtın body veya SOAP response içeriği                       | JSON veya XML           |
+| **status_code**      | INTEGER              |     ✔️    | İşlemin durumunu belirten HTTP/işlem kodu                           | `200`, `400`, `500`     |
+| **error_message**    | TEXT                 |     ❌     | Hata durumunda mesaj bilgisi                                        | `ProviderA unavailable` |
+| **created_at**       | TIMESTAMP            | ✔️ (auto) | Log girişinin oluşturulma zamanı                                    | `2025-01-10 13:45:22`   |
 
 ---
 
