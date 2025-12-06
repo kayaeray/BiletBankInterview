@@ -34,7 +34,7 @@ This project is part of a 3-service flight management ecosystem:
 | --------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------- |
 | **Flight Provider A**                         | A mock flight provider service exposing flight data via SOAP API                              | Java + Spring (SOAP)      |
 | **Flight Provider B**                         | Another SOAP-based flight provider with different data structure/rules                        | Java + Spring (SOAP)      |
-| **Flight Provider Consumer** *(this project)* | Aggregates and consumes flight data from Provider A & B, processes and stores into PostgreSQL | Java 17 + Spring Boot 3.x |
+| **Flight Provider Consumer**  | Aggregates and consumes flight data from Provider A & B, processes and stores into PostgreSQL | Java 17 + Spring Boot 3.x |
 
 
 ### 🧱 High-Level Architecture Diagram
@@ -81,17 +81,18 @@ This table stores request and response details for monitoring and debugging purp
 
 📝 **Fields Explanation**
 
-| Column Name          | Data Type            |  Required | Description                                                         | Example                 |
-| -------------------- | -------------------- | :-------: | ------------------------------------------------------------------- | ----------------------- |
-| **id**               | SERIAL (Primary Key) |     ✔️    | Her bir log kaydı için benzersiz otomatik artan ID                  | `145`                   |
-| **service_name**     | VARCHAR(50)          |     ✔️    | Log kaydını oluşturan servis adı (REST API / ProviderA / ProviderB) | `ProviderA Integration` |
-| **endpoint**         | VARCHAR(200)         |     ✔️    | Çağrı yapılan endpoint URL veya API yolu                            | `/api/flights/search`   |
-| **http_method**      | VARCHAR(10)          |     ✔️    | Kullanılan protokol/HTTP metodu                                     | `POST`, `SOAP`, `GET`   |
-| **request_payload**  | TEXT                 |     ❌     | Gönderilen isteğin body veya SOAP payload içeriği                   | JSON veya XML           |
-| **response_payload** | TEXT                 |     ❌     | Dönen yanıtın body veya SOAP response içeriği                       | JSON veya XML           |
-| **status_code**      | INTEGER              |     ✔️    | İşlemin durumunu belirten HTTP/işlem kodu                           | `200`, `400`, `500`     |
-| **error_message**    | TEXT                 |     ❌     | Hata durumunda mesaj bilgisi                                        | `ProviderA unavailable` |
-| **created_at**       | TIMESTAMP            | ✔️ (auto) | Log girişinin oluşturulma zamanı                                    | `2025-01-10 13:45:22`   |
+| Column Name          | Data Type            |  Required | Description                                                                     | Example                 |
+| -------------------- | -------------------- | :-------: | ------------------------------------------------------------------------------- | ----------------------- |
+| **id**               | SERIAL (Primary Key) |     ✔️    | Auto-incremented unique identifier for each log record                          | `145`                   |
+| **service_name**     | VARCHAR(50)          |     ✔️    | Name of the component that generated the log (REST API / ProviderA / ProviderB) | `ProviderA Integration` |
+| **endpoint**         | VARCHAR(200)         |     ✔️    | URL or API path where the request was executed                                  | `/api/flights/search`   |
+| **http_method**      | VARCHAR(10)          |     ✔️    | HTTP method or communication protocol used                                      | `POST`, `GET`, `SOAP`   |
+| **request_payload**  | TEXT                 |     ❌     | Raw request body or SOAP payload content                                        | JSON or XML string      |
+| **response_payload** | TEXT                 |     ❌     | Raw response body or SOAP response content                                      | JSON or XML string      |
+| **status_code**      | INTEGER              |     ✔️    | Status code representing the result of the operation                            | `200`, `400`, `500`     |
+| **error_message**    | TEXT                 |     ❌     | Error details if the operation failed                                           | `ProviderB timeout`     |
+| **created_at**       | TIMESTAMP            | ✔️ (auto) | Timestamp when the log record was created                                       | `2025-01-10 13:45:22`   |
+
 
 ---
 
